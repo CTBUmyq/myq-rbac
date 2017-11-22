@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.muyiquan.rbac.dao.UserDao">
+
+    <sql id="selectUserList">
+        u.id as id,
+        u.email as email,
+        u.username as username,
+        u.password as password,
+        u.role as role,
+        u.status as status,
+        u.regTime as regTime,
+        u.regIp as regIp
+    </sql>
+
+    <select id="selectUser" resultType="User">
+        SELECT
+        <include refid="selectUserList" />
+        from user u
+        <where>
+            <if test="id != null and id != 0">
+               and u.id = #{id}
+            </if>
+            <if test="role != null and role!=''">
+                and u.role = #{role}
+            </if>
+            <if test="status != null">
+                and u.status = #{status}
+            </if>
+            <if test="username != null and username != ''">
+                and u.username LIKE
+                <if test="dbName == 'oracle'">'%'||#{username}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{username}+'%'</if>
+                <if test="dbName == 'mysql'">CONCAT('%', #{username}, '%')</if>
+            </if>
+            <if test="email != null and email != ''">
+                and u.email LIKE
+                <if test="dbName == 'oracle'">'%'||#{email}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{email}+'%'</if>
+                <if test="dbName == 'mysql'">CONCAT('%', #{email}, '%')</if>
+            </if>
+        </where>
+    </select>
+</mapper>
